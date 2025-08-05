@@ -1,12 +1,5 @@
 ﻿@inherits LayoutComponentBase
 
-@code {
-    private static readonly string BuildTime = typeof(MainLayout).Assembly
-        .GetCustomAttributes(typeof(System.Reflection.AssemblyMetadataAttribute), false)
-        .OfType<System.Reflection.AssemblyMetadataAttribute>()
-        .FirstOrDefault(a => a.Key == "BuildTime")?.Value
-        ?? "Unknown";
-}
 
 <div class="page">
     <div class="sidebar">
@@ -22,9 +15,6 @@
             @Body
         </article>
 
-        <footer class="px-4 text-muted" style="font-size:small;">
-            Build Time: @BuildTime
-        </footer>
     </main>
 </div>
 
