@@ -1,0 +1,40 @@
+﻿@page "/counter"
+@using Microsoft.AspNetCore.SignalR.Client
+@rendermode InteractiveServer
+
+@inject CounterService CounterService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Räknare</PageTitle>
+
+<h1>Räknare</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentCount = CounterService.CurrentCount;
+
+        var hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/counterHub"))
+            .Build();
+
+        hubConnection.On<int>("ReceiveCount", count =>
+        {
+            currentCount = count;
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    private async Task IncrementCount()
+    {
+        await CounterService.IncrementCountAsync();
+    }
+}
