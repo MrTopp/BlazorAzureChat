@@ -1,8 +1,6 @@
 using BlazorAzureChat.Components;
 using BlazorAzureChat.Components.Services;
 
-using Microsoft.Azure.SignalR;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
