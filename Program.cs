@@ -1,4 +1,7 @@
 using BlazorAzureChat.Components;
+using BlazorAzureChat.Components.Services;
+
+using Microsoft.Azure.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,7 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddSingleton<CounterService>();
+builder.Services.AddSingleton<ChatService>();
 builder.Services.AddSignalR();
+builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration["Azure:SignalR:ConnectionString"]!);
 
 var app = builder.Build();
 
@@ -27,5 +32,6 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 app.MapHub<CounterHub>("/counterHub");
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

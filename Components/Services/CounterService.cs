@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 
+namespace BlazorAzureChat.Components.Services;
+
 public class CounterService
 {
     private readonly IHubContext<CounterHub> _hubContext;

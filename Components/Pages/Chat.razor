@@ -1,0 +1,70 @@
+﻿@page "/chat"
+@using BlazorAzureChat.Components.Services
+@using Microsoft.AspNetCore.SignalR.Client
+@rendermode InteractiveServer
+
+@inject ChatService ChatService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Chat</PageTitle>
+
+<h3>Chat</h3>
+
+@if (_messagList is { Count: > 0 })
+{
+    <ul>
+        @foreach (var message in _messagList)
+        {
+            <li>@message</li>
+        }
+    </ul>
+}
+
+<input @bind="_newMessage" @bind:event="oninput" placeholder="Type your message..." @onkeydown="HandleInputKeyDown" />
+<button @onclick="SendMessage">Send</button>
+
+
+@code {
+    private IReadOnlyList<string>? _messagList;
+    private string _newMessage = string.Empty;
+    private HubConnection? _hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _messagList = ChatService.GetMessages();
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/chatHub"))
+            .Build();
+
+        _hubConnection.On<IReadOnlyList<string>>("ReceiveChat", messages =>
+        {
+            _messagList = messages;
+            InvokeAsync(StateHasChanged);
+        });
+
+        await _hubConnection.StartAsync();
+    }
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(_newMessage))
+        {
+            await AddMessage(_newMessage);
+            _newMessage = string.Empty;
+        }
+    }
+
+    private async Task AddMessage(string message)
+    {
+        await ChatService.EnqueueMessage(message);
+    }
+
+    private async Task HandleInputKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SendMessage();
+        }
+    }
+}
