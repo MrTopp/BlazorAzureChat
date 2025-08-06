@@ -7,7 +7,7 @@ public class ChatService
     private readonly IHubContext<ChatHub> _hubContext;
 
     // String queue for storing messages, limited to 10 entries
-    private readonly Queue<string> _messageQueue = new([$"Startad {DateTime.Now}"]);
+    private readonly Queue<string> _messageQueue = new([$"Startad {DateTime.Now:yyyy-MM-dd HH:mm:ss}"]);
 
     public ChatService(IHubContext<ChatHub> hubContext)
     {
